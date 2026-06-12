@@ -1,0 +1,5 @@
+# Копіюється у /etc/kisa/kisa.yml
+git_repo:   "/srv/kisa/odesa-repo"            # clone https://github.com/dragunovsky/odesa-test
+bundle_dir: "/srv/kisa/bundles"
+base_url:   "http://100.x.y.z:8000"           # tailscale IP VM з КІСА
+bind:       "0.0.0.0:8000"

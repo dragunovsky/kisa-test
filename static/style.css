@@ -1,0 +1,11 @@
+body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; }
+h1 { color: #1E2761; } h2 { color: #2E75B6; margin-top: 2rem; }
+table { border-collapse: collapse; width: 100%; }
+th, td { border: 1px solid #ccc; padding: 6px 10px; text-align: left; }
+th { background: #DEEAF6; }
+code { font-family: Consolas, monospace; }
+.st-online  td:nth-child(2) { color: #1a7d3a; font-weight: bold; }
+.st-stale   td:nth-child(2) { color: #b8860b; font-weight: bold; }
+.st-offline td:nth-child(2) { color: #999; }
+fieldset { margin: 1rem 0; } button { padding: 8px 20px; font-size: 1rem; }
+select { max-width: 600px; }

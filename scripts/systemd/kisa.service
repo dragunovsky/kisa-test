@@ -1,0 +1,18 @@
+[Unit]
+Description=KISA PoC (Flask)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=kisa
+Group=kisa
+WorkingDirectory=/opt/kisa
+ExecStart=/opt/kisa/.venv/bin/gunicorn --workers 1 --threads 4 --bind 0.0.0.0:8000 'kisa:app'
+Restart=on-failure
+RestartSec=3
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
