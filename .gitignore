@@ -1,0 +1,45 @@
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*token*
+*secret*
+*password*
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.cache/
+
+# Logs and runtime
+*.log
+logs/
+tmp/
+run/
+*.pid
+
+# Backups
+*.tar
+*.tar.gz
+*.zip
+backup/
+backups/
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
