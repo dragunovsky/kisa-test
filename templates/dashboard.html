@@ -1,154 +1,165 @@
 <!DOCTYPE html>
 <html lang="uk">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>КІСА — командний центр</title>
-<meta http-equiv="refresh" content="20">
-<style>
-  :root{
-    --bg:#0A1330;--bg2:#0E1840;--bg3:#16224F;--line:#25336B;--line2:#1B2750;
-    --cyan:#58CFE8;--amber:#F0B44E;--green:#5FBE92;--red:#E0697B;
-    --text:#EAEEF8;--muted:#828FB4;--muted2:#5C6892;
-    --mono:ui-monospace,"SF Mono","JetBrains Mono","Cascadia Code",Menlo,Consolas,monospace;
-    --sans:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.5}
-  .wrap{max-width:1180px;margin:0 auto;padding:0 22px}
-  a{color:inherit;text-decoration:none}
-  header{border-bottom:1px solid var(--line2);background:var(--bg)}
-  .nav{display:flex;align-items:center;justify-content:space-between;height:60px}
-  .brand{font-family:var(--mono);font-weight:700;letter-spacing:.18em;font-size:16px}
-  .brand .dot{color:var(--cyan)}
-  .nav-meta{font-family:var(--mono);font-size:12px;color:var(--muted);letter-spacing:.08em}
-  .nav-meta b{color:var(--green)}
-
-  h2{font-size:20px;font-weight:700;letter-spacing:-.01em;margin:34px 0 14px}
-  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.2em;
-    text-transform:uppercase;color:var(--cyan)}
-
-  table{width:100%;border-collapse:collapse;font-size:14px;
-    background:var(--bg2);border:1px solid var(--line2);border-radius:6px;overflow:hidden}
-  th{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
-    color:var(--muted2);text-align:left;padding:12px 16px;border-bottom:1px solid var(--line2);
-    background:var(--bg3)}
-  td{padding:13px 16px;border-bottom:1px solid var(--line2);vertical-align:middle}
-  tr:last-child td{border-bottom:none}
-  code{font-family:var(--mono);font-size:12.5px;color:var(--cyan)}
-  .pill{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;
-    padding:3px 9px;border-radius:3px;font-weight:600}
-  .pill.online{background:rgba(95,190,146,.16);color:var(--green)}
-  .pill.stale{background:rgba(240,180,78,.16);color:var(--amber)}
-  .pill.offline{background:rgba(224,105,123,.14);color:var(--red)}
-  .hc{font-family:var(--mono);font-size:12px;color:var(--muted)}
-  .hc .ok{color:var(--green)} .hc .warn{color:var(--amber)} .hc .fail{color:var(--red)}
-  .pending{font-family:var(--mono);font-size:12px;color:var(--amber)}
-  .empty{padding:40px 16px;text-align:center;color:var(--muted)}
-
-  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 8px}
-  .btn{font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
-    padding:9px 16px;border-radius:3px;border:1px solid var(--line);cursor:pointer;
-    background:transparent;color:var(--text);transition:all .2s}
-  .btn:hover{border-color:var(--cyan);color:var(--cyan)}
-  .btn.primary{background:var(--cyan);color:#06122B;border-color:var(--cyan);font-weight:700}
-  .btn.primary:hover{background:#7adcf0}
-
-  .deploy{background:var(--bg2);border:1px solid var(--line2);border-radius:6px;
-    padding:20px;margin-top:14px}
-  .deploy.off{color:var(--muted);font-family:var(--mono);font-size:13px}
-  .deploy label{display:block;font-size:13px;color:var(--muted);margin:10px 0 5px}
-  .deploy select{width:100%;max-width:640px;background:var(--bg);color:var(--text);
-    border:1px solid var(--line);border-radius:3px;padding:9px;font-family:var(--mono);font-size:13px}
-  .checks{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:8px}
-  .checks label{display:flex;gap:8px;align-items:center;font-family:var(--mono);font-size:12.5px;
-    color:var(--text);background:var(--bg);border:1px solid var(--line2);border-radius:3px;padding:8px 10px}
-  footer{color:var(--muted2);font-family:var(--mono);font-size:11px;letter-spacing:.08em;
-    padding:30px 0;border-top:1px solid var(--line2);margin-top:40px}
-  :focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
-</style>
+  <meta charset="utf-8">
+  <title>КІСА - dashboard</title>
+  <meta http-equiv="refresh" content="15">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Важливо: relative URL, бо застосунок зазвичай відкривається через /app/ -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-<header>
-  <div class="wrap nav">
-    <div class="brand">КІСА<span class="dot">.</span></div>
-    <div class="nav-meta">парк: <b>{{ counts.online }}</b> / {{ counts.total }} online</div>
-  </div>
-</header>
-
-<div class="wrap">
-  <h2><span class="eyebrow">Парк</span></h2>
-  <table>
-    <thead>
-      <tr>
-        <th>drone_id</th><th>Статус</th><th>Версія</th>
-        <th>Healthcheck</th><th>Uptime</th><th>Pending</th>
-      </tr>
-    </thead>
-    <tbody>
-    {% for d in drones %}
-      <tr>
-        <td><code>{{ d.drone_id[:14] }}</code></td>
-        <td><span class="pill {{ d.status }}">{{ d.status }}</span>
-            <span class="hc"> {{ d.age_s }}s</span></td>
-        <td><code>{{ d.commit[:10] if d.commit else '-' }}</code></td>
-        <td class="hc">
-          {% set s = d.healthcheck.summary if d.healthcheck else None %}
-          {% if s %}
-            <span class="ok">{{ s.ok or 0 }} ok</span>
-            {% if s.warn %}<span class="warn">{{ s.warn }} warn</span>{% endif %}
-            {% if s.fail %}<span class="fail">{{ s.fail }} fail</span>{% endif %}
-            {% if s.skip %}<span>{{ s.skip }} skip</span>{% endif %}
-          {% else %}-{% endif %}
-        </td>
-        <td class="hc">{{ d.uptime_s or '-' }}s</td>
-        <td class="pending">{% if d.pending %}&rarr; {{ d.pending.commit[:10] }}{% else %}-{% endif %}</td>
-      </tr>
-    {% else %}
-      <tr><td colspan="6" class="empty">
-        Поки немає beacons. Наземки з'являться тут протягом 30 секунд після підключення.<br>
-        Для перегляду інтерфейсу можна додати тестові наземки.
-      </td></tr>
-    {% endfor %}
-    </tbody>
-  </table>
-
-  <div class="bar">
-    <form method="post" action="/api/demo/seed" style="display:inline">
-      <button class="btn" type="submit">+ Тестові наземки</button>
-    </form>
-    <form method="post" action="/api/demo/clear" style="display:inline">
-      <button class="btn" type="submit">Очистити тестові</button>
-    </form>
-  </div>
-
-  <h2><span class="eyebrow">Оновлення</span></h2>
-  {% if deploy_enabled %}
-    <form class="deploy" method="post" action="/deploy">
-      <label>Commit ОДЕСА</label>
-      <select name="commit" required>
-        {% for c in commits %}
-          <option value="{{ c.hash }}">{{ c.hash[:8] }} — {{ c.subject }} ({{ c.date[:10] }})</option>
-        {% endfor %}
-      </select>
-      <label>Наземки</label>
-      <div class="checks">
-        {% for d in drones %}
-          <label><input type="checkbox" name="drone_ids" value="{{ d.drone_id }}"
-            {% if d.status == 'offline' %}disabled{% endif %}>
-            {{ d.drone_id[:14] }}</label>
-        {% endfor %}
-      </div>
-      <div class="bar"><button class="btn primary" type="submit">Запланувати оновлення</button></div>
-    </form>
-  {% else %}
-    <div class="deploy off">
-      Deploy вимкнено. Для увімкнення задай <code>KISA_GIT_REPO</code> у /opt/kisa/.env
-      (локальний clone репозиторію ОДЕСА) і перезапусти контейнер kisa.
+  <header class="topbar">
+    <div>
+      <div class="eyebrow">KISA dashboard</div>
+      <h1>КІСА - керування парком ОДЕСА</h1>
+      <p>Стан наземок, останні beacons, pending-команди та оновлення через beacon-driven модель.</p>
     </div>
-  {% endif %}
-</div>
+    <div class="actions">
+      <form method="post" action="{{ url_for('demo_seed') }}">
+        <button type="submit">Додати demo</button>
+      </form>
+      <form method="post" action="{{ url_for('demo_clear') }}">
+        <button type="submit" class="secondary">Очистити demo</button>
+      </form>
+    </div>
+  </header>
 
-<footer><div class="wrap">КІСА · командно-інформативна система автоматизації · сторінка оновлюється кожні 20с</div></footer>
+  <section class="cards">
+    <div class="card">
+      <span class="label">Усього</span>
+      <strong>{{ counts.total }}</strong>
+    </div>
+    <div class="card ok">
+      <span class="label">Online</span>
+      <strong>{{ counts.online }}</strong>
+    </div>
+    <div class="card warn">
+      <span class="label">Stale</span>
+      <strong>{{ counts.stale }}</strong>
+    </div>
+    <div class="card muted">
+      <span class="label">Offline</span>
+      <strong>{{ counts.offline }}</strong>
+    </div>
+    <div class="card">
+      <span class="label">Pending</span>
+      <strong>{{ counts.pending }}</strong>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">
+      <h2>Парк</h2>
+      <span>{{ drones|length }} наземок</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>drone_id</th>
+            <th>Статус</th>
+            <th>Версія</th>
+            <th>Healthcheck</th>
+            <th>Uptime</th>
+            <th>IP</th>
+            <th>Pending</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for d in drones %}
+          <tr class="st-{{ d.status }}">
+            <td><code>{{ d.drone_id[:16] }}</code></td>
+            <td>
+              <span class="badge {{ d.status }}">{{ d.status }}</span>
+              <small>{{ d.age_s }}s</small>
+            </td>
+            <td><code>{{ d.commit[:10] if d.commit else '-' }}</code></td>
+            <td>
+              {% if d.healthcheck and d.healthcheck.summary %}
+                <code>{{ d.healthcheck.summary }}</code>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+            <td>{{ d.uptime_s or '-' }}s</td>
+            <td>{{ d.ip or '-' }}</td>
+            <td>
+              {% if d.pending %}
+                <code>{{ d.pending.action }} -> {{ d.pending.commit[:10] }}</code>
+              {% else %}
+                -
+              {% endif %}
+            </td>
+          </tr>
+        {% else %}
+          <tr>
+            <td colspan="7" class="empty">
+              Поки немає beacons. Для перевірки натискаємо "Додати demo" або чекаємо запит від наземки.
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-title">
+      <h2>Оновити наземки</h2>
+      {% if deploy_enabled %}
+        <span>deploy увімкнено</span>
+      {% else %}
+        <span class="disabled">deploy вимкнено</span>
+      {% endif %}
+    </div>
+
+    {% if not deploy_enabled %}
+      <p class="notice">
+        Deploy вимкнено. Щоб увімкнути, задаємо <code>KISA_GIT_REPO</code> і
+        <code>KISA_BASE_URL</code>, після цього перезапускаємо контейнер.
+      </p>
+    {% elif not commits %}
+      <p class="notice">
+        Git-репозиторій заданий, але список commit поки порожній або repo недоступна.
+      </p>
+    {% else %}
+      <form method="post" action="{{ url_for('deploy') }}" class="deploy-form">
+        <label>
+          Commit:
+          <select name="commit" required>
+            {% for c in commits %}
+              <option value="{{ c.hash }}">{{ c.hash[:8] }} - {{ c.subject }} ({{ c.date[:10] }})</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <fieldset>
+          <legend>Наземки:</legend>
+          {% for d in drones %}
+            <label class="check-row">
+              <input type="checkbox" name="drone_ids" value="{{ d.drone_id }}"
+                     {% if d.status == 'offline' %}disabled{% endif %}>
+              <span><code>{{ d.drone_id[:16] }}</code> - зараз {{ d.commit[:8] if d.commit else '?' }}, {{ d.status }}</span>
+            </label>
+          {% endfor %}
+        </fieldset>
+
+        <button type="submit">Запланувати deploy</button>
+      </form>
+    {% endif %}
+  </section>
+
+  <section class="panel meta">
+    <h2>Сервіс</h2>
+    <ul>
+      <li>Health: <code>GET healthz</code></li>
+      <li>State API: <code>GET api/state</code></li>
+      <li>Beacon API: <code>POST api/beacon</code></li>
+      <li>Base URL: <code>{{ base_url or '-' }}</code></li>
+      <li>Git repo: <code>{{ git_repo or '-' }}</code></li>
+    </ul>
+  </section>
 </body>
 </html>
